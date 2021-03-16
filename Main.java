@@ -163,7 +163,7 @@ public class Main {
 		//Частина 2
 		
 		CoordinateND coordA = new CoordinateND();
-		CoordinateND coordB = new CoordinateND(Direction.N, 45, 30, 36);
+		CoordinateND coordB = new CoordinateND(Direction.LONGITUDE, 45, 30, 36);
 		
 		System.out.println();
 		System.out.println("======Частина 2======");
@@ -194,7 +194,7 @@ class CoordinateND {
     int minutes;
     int seconds;
     public CoordinateND(){
-        this.direction = Direction.N;
+        this.direction = Direction.LONGITUDE;
         this.degrees = 0;
         this.minutes = 0;
         this.seconds = 0;
@@ -218,7 +218,7 @@ class CoordinateND {
     	if (degrees > 180 || (degrees == 180 && (minutes > 0 || seconds > 0))) {
     		throw new RuntimeException("Degrees value is too big.");
     	}
-        if ((direction == Direction.W || direction == Direction.E)) {
+        if ((direction == Direction.LATITUDE)) {
         	if (degrees < -90|| (degrees == -90 && (minutes > 0 || seconds > 0))) {
         		throw new RuntimeException("Degrees value is too small for direction " + 
         	direction + ".");
@@ -234,12 +234,40 @@ class CoordinateND {
         this.seconds = seconds;
     }
     public String valueString(){
-        return this.degrees + "°" + this.minutes + "′" + this.seconds + "″ " + this.direction + "”";
+    	String dir;
+    	if (this.direction == Direction.LATITUDE) {
+    		if (this.degrees >= 0) {
+    			dir = "N";
+    		} else {
+    			dir = "S";
+    		}
+    	} else {
+    		if (this.degrees >= 0) {
+    			dir = "E";
+    		} else {
+    			dir = "W";
+    		}
+    	}
+        return this.degrees + "°" + this.minutes + "′" + this.seconds + "″ " + dir + "”";
     }
 
     public String valueStringFloat(){
+    	String dir;
+    	if (this.direction == Direction.LATITUDE) {
+    		if (this.degrees >= 0) {
+    			dir = "N";
+    		} else {
+    			dir = "S";
+    		}
+    	} else {
+    		if (this.degrees >= 0) {
+    			dir = "E";
+    		} else {
+    			dir = "W";
+    		}
+    	}
         return ((float)this.degrees + (float)this.minutes / 60 + (float)this.seconds / 3600) +
-                "° " + this.direction + "”";
+                "° " + dir + "”";
     }
 
     public CoordinateND middle(CoordinateND input){
@@ -299,10 +327,8 @@ class CoordinateND {
     	return new CoordinateND(a.direction, degrees, minutes, seconds);
     }
 }
-enum Direction{
-    N,
-    S,
-    W,
-    E
-}
 
+enum Direction{
+    LATITUDE,
+    LONGITUDE,
+}
