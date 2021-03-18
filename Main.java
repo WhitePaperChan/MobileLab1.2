@@ -163,7 +163,7 @@ public class Main {
 		//Частина 2
 		
 		CoordinateND coordA = new CoordinateND();
-		CoordinateND coordB = new CoordinateND(Direction.LONGITUDE, 45, 30, 36);
+		CoordinateND coordB = new CoordinateND(Direction.LONGITUDE, -45, 30, 36);
 		
 		System.out.println();
 		System.out.println("======Частина 2======");
@@ -248,7 +248,11 @@ class CoordinateND {
     			dir = "W";
     		}
     	}
-        return this.degrees + "°" + this.minutes + "′" + this.seconds + "″ " + dir + "”";
+    	int degrees = this.degrees;
+    	if (degrees < 0) {
+    		degrees = -degrees;
+    	}
+        return degrees + "°" + this.minutes + "′" + this.seconds + "″ " + dir + "”";
     }
 
     public String valueStringFloat(){
@@ -266,45 +270,40 @@ class CoordinateND {
     			dir = "W";
     		}
     	}
-        return ((float)this.degrees + (float)this.minutes / 60 + (float)this.seconds / 3600) +
+    	int degrees = this.degrees;
+    	if (degrees < 0) {
+    		degrees = -degrees;
+    	}
+        return ((float)degrees + (float)this.minutes / 60 + (float)this.seconds / 3600) +
                 "° " + dir + "”";
     }
 
     public CoordinateND middle(CoordinateND input){
-        if (input.direction != this.direction){
-            return null;
-        }
-        int degrees = this.degrees + input.degrees;
-        int minutes = this.minutes + input.minutes;
-        int seconds = this.seconds + input.seconds;
-        if (seconds >= 60) {
-        	seconds -= 60;
-        	minutes += 1;
-        }
-        if (minutes >= 60) {
-        	minutes -= 60;
-        	degrees += 1;
-        }
-        if (degrees % 2 == 1) {
-        	degrees -= 1;
-        	minutes += 60;
-        }
-        if (minutes % 2 == 1) {
-        	minutes -= 1;
-        	seconds += 60;
-        }
-        degrees /= 2;
-        minutes /= 2;
-        seconds /= 2;
-        return new CoordinateND(this.direction, degrees, minutes, seconds);
+    	return CoordinateND.middle(this, input);
     }
     public static CoordinateND middle(CoordinateND a, CoordinateND b){
     	if (a.direction != b.direction){
             return null;
         }
         int degrees = a.degrees + b.degrees;
-        int minutes = a.minutes + b.minutes;
-        int seconds = a.seconds + b.seconds;
+        int minutes = a.minutes;
+        if (a.degrees < 0) {
+        	minutes = -minutes;
+        }
+        if (b.degrees < 0) {
+        	minutes -= b.minutes;
+        } else {
+        	minutes += b.minutes;
+        }
+        int seconds = a.seconds;
+        if (a.degrees < 0) {
+        	seconds = -seconds;
+        }
+        if (b.degrees < 0) {
+        	seconds -= b.seconds;
+        } else {
+        	seconds += b.seconds;
+        }
         if (seconds >= 60) {
         	seconds -= 60;
         	minutes += 1;
@@ -324,6 +323,12 @@ class CoordinateND {
         degrees /= 2;
         minutes /= 2;
         seconds /= 2;
+        if (minutes < 0) {
+        	minutes = -minutes;
+        }
+        if (seconds < 0) {
+        	seconds = -seconds;
+        }
     	return new CoordinateND(a.direction, degrees, minutes, seconds);
     }
 }
